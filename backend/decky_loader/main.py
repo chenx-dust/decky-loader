@@ -7,7 +7,7 @@ from .localplatform.localplatform import (chmod, chown, service_stop, service_st
                             get_privileged_path, restart_webhelper)
 if hasattr(sys, '_MEIPASS'):
     chmod(sys._MEIPASS, 755) # type: ignore
-    
+
 # Full imports
 import multiprocessing
 multiprocessing.freeze_support()
@@ -28,7 +28,7 @@ from setproctitle import getproctitle, setproctitle, setthreadtitle
 from .browser import PluginBrowser
 from .helpers import (REMOTE_DEBUGGER_UNIT, create_inject_script, csrf_middleware, get_csrf_token, get_loader_version,
                      mkdir_as_user, get_system_pythonpaths, get_effective_user_id)
-                     
+
 from .injector import get_gamepadui_tab, Tab
 from .loader import Loader
 from .settings import SettingsManager
@@ -110,6 +110,8 @@ class PluginManager:
         else:
             self.webhelper_crash_count = 0
         self.last_webhelper_exit = new_time
+        # unload all plugins
+        await self.plugin_loader.shutdown_plugins()
 
         # should never happen
         if (self.webhelper_crash_count > 4):
@@ -169,8 +171,8 @@ class PluginManager:
         logger.debug("Loading plugins")
         await self.plugin_loader.import_plugins()
         if self.settings.getSetting("pluginOrder", None) == None:
-          self.settings.setSetting("pluginOrder", list(self.plugin_loader.plugins.keys()))
-          logger.debug("Did not find pluginOrder setting, set it to default")
+            self.settings.setSetting("pluginOrder", list(self.plugin_loader.plugins.keys()))
+            logger.debug("Did not find pluginOrder setting, set it to default")
 
     async def loader_reinjector(self):
         while self.reinject:
