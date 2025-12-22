@@ -1,4 +1,13 @@
-import { Carousel, DialogButton, Field, Focusable, ProgressBarWithInfo, Spinner, findSP, showModal } from '@decky/ui';
+import {
+  Carousel,
+  DialogButton,
+  Field,
+  Focusable,
+  ProgressBarWithInfo,
+  Spinner,
+  showModal,
+  useWindowRef,
+} from '@decky/ui';
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaExclamation } from 'react-icons/fa';
@@ -11,8 +20,9 @@ import WithSuspense from '../../../WithSuspense';
 const MarkdownRenderer = lazy(() => import('../../../Markdown'));
 
 function PatchNotesModal({ versionInfo, closeModal }: { versionInfo: VerInfo | null; closeModal?: () => {} }) {
-  const SP = findSP();
+  const [outerRef, win] = useWindowRef<HTMLDivElement>();
   const { t } = useTranslation();
+  // TODO proper desktop scrolling
 
   return (
     <>
@@ -37,7 +47,7 @@ function PatchNotesModal({ versionInfo, closeModal }: { versionInfo: VerInfo | n
 }`}
       </style>
 
-      <Focusable onCancelButton={closeModal}>
+      <Focusable ref={outerRef} onCancelButton={closeModal}>
         <Carousel
           fnItemRenderer={(id: number) => (
             <Focusable
@@ -66,12 +76,12 @@ function PatchNotesModal({ versionInfo, closeModal }: { versionInfo: VerInfo | n
           )}
           fnGetId={(id) => id}
           nNumItems={versionInfo?.all?.length}
-          nHeight={SP.innerHeight - 40}
-          nItemHeight={SP.innerHeight - 40}
+          nHeight={(win?.innerHeight || 800) - 40}
+          nItemHeight={(win?.innerHeight || 800) - 40}
           nItemMarginX={0}
           initialColumn={0}
           autoFocus={true}
-          fnGetColumnWidth={() => SP.innerWidth - SP.innerWidth * (10 / 100)}
+          fnGetColumnWidth={() => (win?.innerWidth || 800) - (win?.innerWidth || 800) * (10 / 100)}
           name={t('Updater.decky_updates') as string}
         />
       </Focusable>

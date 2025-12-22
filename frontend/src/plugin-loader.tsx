@@ -1,4 +1,4 @@
-import { ToastNotification } from '@decky/api';
+import type { ToastNotification } from '@decky/api';
 import {
   EUIMode,
   ModalRoot,
@@ -14,6 +14,7 @@ import {
 import { FC, lazy } from 'react';
 import { FaDownload, FaExclamationCircle, FaPlug } from 'react-icons/fa';
 
+import DeckyDesktopUI from './components/DeckyDesktopUI';
 import DeckyIcon from './components/DeckyIcon';
 import { DeckyState, DeckyStateContextProvider, UserInfo, useDeckyState } from './components/DeckyState';
 import { File, FileSelectionType } from './components/modals/filepicker';
@@ -140,6 +141,21 @@ class PluginLoader extends Logger {
         </DeckyStateContextProvider>
       );
     });
+
+    // needs the 1s wait or the entire app becomes drag target lol
+    sleep(1000).then(() =>
+      this.routerHook.addGlobalComponent(
+        'DeckyDesktopUI',
+        () => {
+          return (
+            <DeckyStateContextProvider deckyState={this.deckyState}>
+              <DeckyDesktopUI />
+            </DeckyStateContextProvider>
+          );
+        },
+        EUIMode.Desktop,
+      ),
+    );
 
     initSteamFixes();
 
@@ -343,6 +359,7 @@ class PluginLoader extends Logger {
   public deinit() {
     this.routerHook.removeRoute('/decky/store');
     this.routerHook.removeRoute('/decky/settings');
+    this.routerHook.removeGlobalComponent('DeckyDesktopUI', EUIMode.Desktop);
     deinitSteamFixes();
     deinitFilepickerPatches();
     this.routerHook.deinit();
@@ -608,8 +625,8 @@ class PluginLoader extends Logger {
     // Things will break *very* badly if plugin code touches this outside of @decky/api, so lets make that clear.
     window.__DECKY_SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_deckyLoaderAPIInit = {
       connect: (version: number, pluginName: string) => {
-        if (version < 1 || version > 2) {
-          console.warn(`Plugin ${pluginName} requested unsupported api version ${version}.`);
+        if (version < 1 || version > 3) {
+          console.warn(`Plugin ${pluginName} requested unsupported API version ${version}.`);
         }
 
         const eventListeners: listenerMap = new Map();
@@ -652,12 +669,20 @@ class PluginLoader extends Logger {
           _version: 1,
         } as any;
 
+        // adds useQuickAccessVisible
         if (version >= 2) {
           backendAPI._version = 2;
           backendAPI.useQuickAccessVisible = useQuickAccessVisible;
         }
 
-        this.debug(`${pluginName} connected to loader API.`);
+        // adds uiMode param to route patching and global component functions. no functional changes, but we should warn anyway.
+        if (version >= 3) {
+          backendAPI._version = 3;
+        }
+
+        this.debug(
+          `${pluginName} connected to loader API version ${backendAPI._version} (requested version ${version}).`,
+        );
         return backendAPI;
       },
     };
@@ -713,6 +738,10 @@ class PluginLoader extends Logger {
     };
 
     return pluginAPI;
+  }
+
+  public setDesktopMenuOpen(open: boolean) {
+    this.deckyState.setDesktopMenuOpen(open);
   }
 }
 

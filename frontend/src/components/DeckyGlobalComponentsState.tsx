@@ -1,12 +1,16 @@
+import { EUIMode } from '@decky/ui';
 import { FC, ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 interface PublicDeckyGlobalComponentsState {
-  components: Map<string, FC>;
+  components: Map<EUIMode, Map<string, FC>>;
 }
 
 export class DeckyGlobalComponentsState {
   // TODO a set would be better
-  private _components = new Map<string, FC>();
+  private _components = new Map<EUIMode, Map<string, FC>>([
+    [EUIMode.GamePad, new Map()],
+    [EUIMode.Desktop, new Map()],
+  ]);
 
   public eventBus = new EventTarget();
 
@@ -14,13 +18,19 @@ export class DeckyGlobalComponentsState {
     return { components: this._components };
   }
 
-  addComponent(path: string, component: FC) {
-    this._components.set(path, component);
+  addComponent(path: string, component: FC, uiMode: EUIMode) {
+    const components = this._components.get(uiMode);
+    if (!components) throw new Error(`UI mode ${uiMode} not supported.`);
+
+    components.set(path, component);
     this.notifyUpdate();
   }
 
-  removeComponent(path: string) {
-    this._components.delete(path);
+  removeComponent(path: string, uiMode: EUIMode) {
+    const components = this._components.get(uiMode);
+    if (!components) throw new Error(`UI mode ${uiMode} not supported.`);
+
+    components.delete(path);
     this.notifyUpdate();
   }
 
@@ -30,8 +40,8 @@ export class DeckyGlobalComponentsState {
 }
 
 interface DeckyGlobalComponentsContext extends PublicDeckyGlobalComponentsState {
-  addComponent(path: string, component: FC): void;
-  removeComponent(path: string): void;
+  addComponent(path: string, component: FC, uiMode: EUIMode): void;
+  removeComponent(path: string, uiMode: EUIMode): void;
 }
 
 const DeckyGlobalComponentsContext = createContext<DeckyGlobalComponentsContext>(null as any);
