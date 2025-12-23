@@ -59,7 +59,7 @@ const DeckyDesktopUI: FC = () => {
         externalWindow.close();
       }
     };
-  }, [desktopMenuOpen]);
+  }, [desktopMenuOpen, externalWindow]);
 
   return (
     <>
