@@ -14,11 +14,10 @@ const DeckyDesktopUI: FC = () => {
   useEffect(() => {
     if (desktopMenuOpen) {
       if (!externalWindow || (externalWindow && externalWindow.closed)) {
-        const popup = CreatePopup('DeckyPluginView', {
+        const { popup, element } = CreatePopup('DeckyPluginView', {
           dimensions: { width: 300, height: 600 },
           minWidth: 250,
           minHeight: 300,
-          strRestoreDetails: '1',
           title: 'Decky Loader',
           eCreationFlags: CreationFlags.Resizable,
           owner_window: window,
@@ -27,8 +26,8 @@ const DeckyDesktopUI: FC = () => {
           popup_class: 'fullheight',
         });
 
-        if (popup && popup.popup) {
-          const styleElement = popup.popup.document.createElement('style');
+        if (popup) {
+          const styleElement = popup.document.createElement('style');
           styleElement.textContent = `
             button.DialogButton {
               padding: 0 12px;
@@ -37,11 +36,11 @@ const DeckyDesktopUI: FC = () => {
               overflow: hidden;
             }
           `;
-          popup.popup.document.head.appendChild(styleElement);
+          popup.document.head.appendChild(styleElement);
 
-          setExternalWindow(popup.popup);
-          setExternalElement(popup.element || null);
-          popup.popup.onbeforeunload = () => setDesktopMenuOpen(false);
+          setExternalWindow(popup);
+          setExternalElement(element || null);
+          popup.onbeforeunload = () => setDesktopMenuOpen(false);
         } else {
           // popup blocked or failed
           setDesktopMenuOpen(false);

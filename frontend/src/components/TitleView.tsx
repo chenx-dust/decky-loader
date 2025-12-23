@@ -16,13 +16,28 @@ const TitleView: FC<TitleViewProps> = ({ desktop, popup }) => {
   const { activePlugin, closeActivePlugin, setDesktopMenuOpen } = useDeckyState();
   const { t } = useTranslation();
 
+  const titleBarStyles: CSSProperties = {
+    height: "min-content",
+  }
+
   const titleStyles = {
     display: 'flex',
-    paddingTop: desktop ? '28px' : '3px',
+    paddingTop: desktop ? '30px' : '3px',
     paddingRight: '16px',
     position: 'sticky',
     top: '0px',
     '-webkit-app-region': 'drag',
+  } as CSSProperties;
+
+  const buttonStyles = {
+    height: '28px',
+    width: desktop ? '20px' : '40px',
+    minWidth: 0,
+    padding: desktop ? '' : '10px 12px',
+    display: 'flex',
+    alignItems: desktop ? 'center' : '',
+    justifyContent: desktop ? 'center' : '',
+    '-webkit-app-region': 'no-drag',
   } as CSSProperties;
 
   const onSettingsClick = () => {
@@ -37,29 +52,10 @@ const TitleView: FC<TitleViewProps> = ({ desktop, popup }) => {
     setDesktopMenuOpen(false);
   };
 
-  const buttonStyles = {
-    height: '28px',
-    width: '20px',
-    minWidth: 0,
-    padding: desktop ? '' : '10px 12px',
-    display: 'flex',
-    alignItems: desktop ? 'center' : '',
-    justifyContent: desktop ? 'center' : '',
-    '-webkit-app-region': 'no-drag',
-  };
-
   if (activePlugin === null) {
     return (
       <Focusable style={titleStyles} className={staticClasses.Title}>
-        {popup && (
-          <TitleBar
-            popup={popup}
-            style={{
-              zIndex: 6,
-              height: '24px',
-            }}
-          />
-        )}
+        {popup && <TitleBar popup={popup} style={titleBarStyles} />}
         <div style={{ marginRight: 'auto', flex: 0.9 }}>Decky</div>
         <DialogButton
           style={buttonStyles}
@@ -81,16 +77,7 @@ const TitleView: FC<TitleViewProps> = ({ desktop, popup }) => {
 
   return (
     <Focusable className={staticClasses.Title} style={titleStyles}>
-      {popup && (
-        <TitleBar
-          popup={popup}
-          hideMax={true}
-          style={{
-            zIndex: 6,
-            height: '24px',
-          }}
-        />
-      )}
+      {popup && <TitleBar popup={popup} style={titleBarStyles} />}
       <DialogButton style={buttonStyles} onClick={closeActivePlugin}>
         <FaArrowLeft style={{ marginTop: '-4px', display: 'block' }} />
       </DialogButton>
