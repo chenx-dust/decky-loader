@@ -17,8 +17,8 @@ const TitleView: FC<TitleViewProps> = ({ desktop, popup }) => {
   const { t } = useTranslation();
 
   const titleBarStyles: CSSProperties = {
-    height: "min-content",
-  }
+    height: 'min-content',
+  };
 
   const titleStyles = {
     display: 'flex',
