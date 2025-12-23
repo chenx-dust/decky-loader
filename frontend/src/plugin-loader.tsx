@@ -14,9 +14,9 @@ import {
 import { FC, lazy } from 'react';
 import { FaDownload, FaExclamationCircle, FaPlug } from 'react-icons/fa';
 
-import DeckyDesktopUI from './components/DeckyDesktopUI';
 import DeckyIcon from './components/DeckyIcon';
 import { DeckyState, DeckyStateContextProvider, UserInfo, useDeckyState } from './components/DeckyState';
+import DeckyDesktopUI from './components/desktop/UI';
 import { File, FileSelectionType } from './components/modals/filepicker';
 import { deinitFilepickerPatches, initFilepickerPatches } from './components/modals/filepicker/patches';
 import MultiplePluginsInstallModal from './components/modals/MultiplePluginsInstallModal';
