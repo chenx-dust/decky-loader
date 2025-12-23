@@ -16,9 +16,13 @@ const DeckyDesktopUI: FC = () => {
       if (!externalWindow || (externalWindow && externalWindow.closed)) {
         const popup = CreatePopup('DeckyPluginView', {
           dimensions: { width: 300, height: 600 },
+          minWidth: 250,
+          minHeight: 300,
+          strRestoreDetails: '1',
           title: 'Decky Loader',
           eCreationFlags: CreationFlags.Resizable,
           owner_window: window,
+          html_class: 'fullheight',
           body_class: 'fullheight DesktopUI',
           popup_class: 'fullheight',
         });
@@ -28,6 +32,9 @@ const DeckyDesktopUI: FC = () => {
           styleElement.textContent = `
             button.DialogButton {
               padding: 0 12px;
+            }
+            body {
+              overflow: hidden;
             }
           `;
           popup.popup.document.head.appendChild(styleElement);

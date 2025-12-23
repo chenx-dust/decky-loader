@@ -30,20 +30,22 @@ const PluginView: FC<PluginViewProps> = ({ desktop = false, popup }) => {
 
   if (activePlugin) {
     return (
-      <Focusable onCancelButton={closeActivePlugin}>
+      <Focusable onCancelButton={closeActivePlugin} style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <TitleView desktop={desktop} popup={popup} />
-        <div style={{ height: '100%', paddingTop: '16px' }}>
+        <div style={{ flexGrow: 1, paddingTop: '16px', overflowY: 'auto' }}>
           <ErrorBoundary>{(visible || activePlugin.alwaysRender) && activePlugin.content}</ErrorBoundary>
         </div>
       </Focusable>
     );
   }
   return (
-    <>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <TitleView desktop={desktop} popup={popup} />
       <div
         style={{
           paddingTop: '16px',
+          flexGrow: '1',
+          overflowY: 'auto',
         }}
       >
         <PanelSection>
@@ -66,7 +68,7 @@ const PluginView: FC<PluginViewProps> = ({ desktop = false, popup }) => {
           )}
         </PanelSection>
       </div>
-    </>
+    </div>
   );
 };
 

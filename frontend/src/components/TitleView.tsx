@@ -54,7 +54,6 @@ const TitleView: FC<TitleViewProps> = ({ desktop, popup }) => {
         {popup && (
           <TitleBar
             popup={popup}
-            hideMax={true}
             style={{
               zIndex: 6,
               height: '24px',
