@@ -10,12 +10,13 @@ import TitleView from './TitleView';
 
 interface PluginViewProps {
   desktop?: boolean;
+  popup?: Window;
 }
 
-const PluginView: FC<PluginViewProps> = ({ desktop = false }) => {
+const PluginView: FC<PluginViewProps> = ({ desktop = false, popup }) => {
   const { plugins, hiddenPlugins, updates, activePlugin, pluginOrder, setActivePlugin, closeActivePlugin } =
     useDeckyState();
-  const visible = useQuickAccessVisible();
+  const visible = useQuickAccessVisible() || desktop;
   const { t } = useTranslation();
 
   const pluginList = useMemo(() => {
@@ -30,7 +31,7 @@ const PluginView: FC<PluginViewProps> = ({ desktop = false }) => {
   if (activePlugin) {
     return (
       <Focusable onCancelButton={closeActivePlugin}>
-        <TitleView desktop={desktop} />
+        <TitleView desktop={desktop} popup={popup} />
         <div style={{ height: '100%', paddingTop: '16px' }}>
           <ErrorBoundary>{(visible || activePlugin.alwaysRender) && activePlugin.content}</ErrorBoundary>
         </div>
@@ -39,7 +40,7 @@ const PluginView: FC<PluginViewProps> = ({ desktop = false }) => {
   }
   return (
     <>
-      <TitleView desktop={desktop} />
+      <TitleView desktop={desktop} popup={popup} />
       <div
         style={{
           paddingTop: '16px',

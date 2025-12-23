@@ -5,7 +5,6 @@ import DeckyIcon from '../DeckyIcon';
 import { useDeckyState } from '../DeckyState';
 import PluginView from '../PluginView';
 import { CreatePopup, CreationFlags } from './Popup';
-import { TitleBar } from './TitleBar';
 
 const DeckyDesktopUI: FC = () => {
   const { desktopMenuOpen, setDesktopMenuOpen } = useDeckyState();
@@ -20,11 +19,19 @@ const DeckyDesktopUI: FC = () => {
           title: 'Decky Loader',
           eCreationFlags: CreationFlags.Resizable,
           owner_window: window,
-          body_class: 'fullheight WindowFocus',
+          body_class: 'fullheight DesktopUI',
           popup_class: 'fullheight',
         });
 
         if (popup && popup.popup) {
+          const styleElement = popup.popup.document.createElement('style');
+          styleElement.textContent = `
+            button.DialogButton {
+              padding: 0 12px;
+            }
+          `;
+          popup.popup.document.head.appendChild(styleElement);
+
           setExternalWindow(popup.popup);
           setExternalElement(popup.element || null);
           popup.popup.onbeforeunload = () => setDesktopMenuOpen(false);
@@ -80,21 +87,7 @@ const DeckyDesktopUI: FC = () => {
       />
       {externalWindow &&
         externalElement &&
-        createPortal(
-          <>
-            <TitleBar
-              popup={externalWindow}
-              hideMax={true}
-              style={{
-                zIndex: 6,
-                height: '24px',
-              }}
-            />
-            <div style={{ height: '24px' }} />
-            <PluginView desktop={true} />
-          </>,
-          externalElement,
-        )}
+        createPortal(<PluginView desktop={true} popup={externalWindow} />, externalElement)}
     </>
   );
 };

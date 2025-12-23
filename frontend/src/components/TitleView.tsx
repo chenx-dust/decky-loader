@@ -5,22 +5,25 @@ import { BsGearFill } from 'react-icons/bs';
 import { FaArrowLeft, FaStore } from 'react-icons/fa';
 
 import { useDeckyState } from './DeckyState';
-
-const titleStyles: CSSProperties = {
-  display: 'flex',
-  paddingTop: '3px',
-  paddingRight: '16px',
-  position: 'sticky',
-  top: '0px',
-};
+import { TitleBar } from './desktop/TitleBar';
 
 interface TitleViewProps {
   desktop?: boolean;
+  popup?: Window;
 }
 
-const TitleView: FC<TitleViewProps> = ({ desktop }) => {
+const TitleView: FC<TitleViewProps> = ({ desktop, popup }) => {
   const { activePlugin, closeActivePlugin, setDesktopMenuOpen } = useDeckyState();
   const { t } = useTranslation();
+
+  const titleStyles = {
+    display: 'flex',
+    paddingTop: desktop ? '28px' : '3px',
+    paddingRight: '16px',
+    position: 'sticky',
+    top: '0px',
+    '-webkit-app-region': 'drag',
+  } as CSSProperties;
 
   const onSettingsClick = () => {
     Navigation.Navigate('/decky/settings');
@@ -36,17 +39,28 @@ const TitleView: FC<TitleViewProps> = ({ desktop }) => {
 
   const buttonStyles = {
     height: '28px',
-    width: '40px',
+    width: '20px',
     minWidth: 0,
     padding: desktop ? '' : '10px 12px',
     display: 'flex',
     alignItems: desktop ? 'center' : '',
     justifyContent: desktop ? 'center' : '',
+    '-webkit-app-region': 'no-drag',
   };
 
   if (activePlugin === null) {
     return (
       <Focusable style={titleStyles} className={staticClasses.Title}>
+        {popup && (
+          <TitleBar
+            popup={popup}
+            hideMax={true}
+            style={{
+              zIndex: 6,
+              height: '24px',
+            }}
+          />
+        )}
         <div style={{ marginRight: 'auto', flex: 0.9 }}>Decky</div>
         <DialogButton
           style={buttonStyles}
@@ -68,6 +82,16 @@ const TitleView: FC<TitleViewProps> = ({ desktop }) => {
 
   return (
     <Focusable className={staticClasses.Title} style={titleStyles}>
+      {popup && (
+        <TitleBar
+          popup={popup}
+          hideMax={true}
+          style={{
+            zIndex: 6,
+            height: '24px',
+          }}
+        />
+      )}
       <DialogButton style={buttonStyles} onClick={closeActivePlugin}>
         <FaArrowLeft style={{ marginTop: '-4px', display: 'block' }} />
       </DialogButton>
